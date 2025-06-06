@@ -8,9 +8,11 @@ A simple and clean **Python Flask project template** with pre-defined structure 
 
 - 📁 Predefined project structure
 - ♻️ Common utilities (logging, configs, error handling, etc.)
+- ⚙️ Easy to extend and maintain
 - 🧪 Ready for development and extension
 - 🐳 Optional Docker support (add if needed)
 - 📦 Easy to scale and maintain
+- 📄 Includes [CHANGELOG.md](./CHANGELOG.md) to track project updates
 
 ---
 
@@ -72,7 +74,7 @@ nqdev-py-flask-starter/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/yourusername/nqdev-py-flask-starter.git
+git clone https://github.com/nguyenquy0710/nqdev-py-flask-starter.git
 cd nqdev-py-flask-starter
 ```
 
@@ -95,6 +97,10 @@ By default, the app runs on http://127.0.0.1:5000
 ## 🧩 Customize
 
 Start adding your routes in `app/routes/`, business logic in `services/`, and shared code in `common/`. Configuration can be adjusted via `config/config.py`.
+
+## 📌 Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for the list of updates, versions, and improvements.
 
 ## 📄 License
 
