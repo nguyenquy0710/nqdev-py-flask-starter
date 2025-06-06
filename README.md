@@ -105,4 +105,3 @@ See [CHANGELOG.md](./CHANGELOG.md) for the list of updates, versions, and improv
 ## 📄 License
 
 [MIT](LICENSE) – feel free to use, modify, and distribute.
-
