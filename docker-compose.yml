@@ -1,0 +1,33 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# Stock Tracker App
+# -----------------------------------------
+# https://github.com/nqdev-group/stock-tracker-app
+# -----------------------------------------
+# START: docker-compose up -d --build --force-recreate
+# STOP: docker-compose down -v
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+services:
+  stock-tracker:
+    image: ghcr.io/nqdev-group/stock-tracker-app:latest
+    container_name: stock_tracker_10002
+    restart: unless-stopped
+    # network_mode: host
+    ports:
+      - "192.168.1.200:10002:5000"  # Map cổng host:container (đổi nếu app dùng cổng khác)
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    env_file:
+      - .env
+    volumes:
+      - ./data/storages:/app/storages:rw
+      - ./data/logs:/app/logs:rw
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Để kết nối đến localhost của host từ container
+    deploy:
+      resources:
+        limits:
+          cpus: "0.80" # Giới hạn 80% CPU
+          memory: "3.2G" # Giới hạn 3.2GB RAM (80% của 4GB)
+        reservations:
+          memory: "256M" # Đảm bảo container có ít nhất 256MB RAM
