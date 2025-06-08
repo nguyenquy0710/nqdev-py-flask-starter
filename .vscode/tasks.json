@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🧪 Run Tests",
+      "type": "shell",
+      "command": "run.bat",
+      "args": ["test"],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "🧪 Run Tests + Coverage",
+      "type": "shell",
+      "command": "run.bat",
+      "args": ["test", "enable"],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "🚀 Run Flask App",
+      "type": "shell",
+      "command": "run.bat",
+      "args": ["run"],
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "📦 Install Environment",
+      "type": "shell",
+      "command": "run.bat",
+      "args": ["install"],
+      "problemMatcher": []
+    },
+    {
+      "label": "🧹 Clean Build Artifacts",
+      "type": "shell",
+      "command": "run.bat",
+      "args": ["clean"],
+      "problemMatcher": []
+    }
+  ]
+}
