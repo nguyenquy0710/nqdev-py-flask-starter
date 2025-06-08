@@ -1,0 +1,3 @@
+# Static folder
+
+Chứa các file tĩnh như CSS, JS, ảnh,...

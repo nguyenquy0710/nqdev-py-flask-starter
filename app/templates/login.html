@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="DC.language" content="scheme=utf-8 content=vi" />
+
+    <title>Đăng nhập - Stock Tracker</title>
+
+    <link rel="icon" href="https://cdn-s3-001.quyit.id.vn/gitbook/blogs/logo_nqdev_512x512.png" sizes="32x32" />
+    <link rel="icon" href="https://cdn-s3-001.quyit.id.vn/gitbook/blogs/logo_nqdev_512x512.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="https://cdn-s3-001.quyit.id.vn/gitbook/blogs/logo_nqdev_512x512.png" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+      :root {
+        --primary-color: #212529;
+        --secondary-color: #6c757d;
+        --success-color: #198754;
+        --danger-color: #dc3545;
+        --warning-color: #fd7e14;
+        --info-color: #0dcaf0;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+      }
+
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: #ffffff;
+        color: #212529;
+        line-height: 1.6;
+      }
+
+      .hero-section {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        position: relative;
+      }
+
+      .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(circle at 2px 2px, #00000008 1px, transparent 0);
+        background-size: 40px 40px;
+        pointer-events: none;
+      }
+
+      .login-container {
+        max-width: 480px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+      }
+
+      .brand-logo {
+        width: 64px;
+        height: 64px;
+        background: var(--dark-color);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .hero-subtitle {
+        font-size: 1.25rem;
+        color: var(--secondary-color);
+        text-align: center;
+        margin-bottom: 3rem;
+        line-height: 1.5;
+      }
+
+      .login-card {
+        background: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        border: 1px solid #f1f5f9;
+        padding: 3rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-floating {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-floating>.form-control {
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 0.75rem;
+        padding: 1rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .form-floating>.form-control:focus {
+        background-color: #ffffff;
+        border-color: var(--dark-color);
+        box-shadow: 0 0 0 0.25rem rgba(33, 37, 41, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .form-floating>label {
+        color: var(--secondary-color);
+        font-weight: 500;
+      }
+
+      .btn-primary-custom {
+        background-color: var(--dark-color);
+        border-color: var(--dark-color);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid var(--dark-color);
+      }
+
+      .btn-primary-custom:hover {
+        background-color: #495057;
+        border-color: #495057;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      .btn-primary-custom:focus {
+        box-shadow: 0 0 0 0.25rem rgba(33, 37, 41, 0.25);
+      }
+
+      .btn-zalo {
+        background-color: #0066ff;
+        border-color: #0066ff;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .btn-zalo:hover {
+        background-color: #0056d6;
+        border-color: #0056d6;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 102, 255, 0.3), 0 4px 6px -2px rgba(0, 102, 255, 0.1);
+      }
+
+      .divider {
+        position: relative;
+        text-align: center;
+        margin: 2rem 0;
+      }
+
+      .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #e9ecef;
+      }
+
+      .divider span {
+        background-color: #ffffff;
+        color: var(--secondary-color);
+        padding: 0 1.5rem;
+        font-weight: 500;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--secondary-color);
+        cursor: pointer;
+        z-index: 10;
+        transition: color 0.3s ease;
+      }
+
+      .password-toggle:hover {
+        color: var(--dark-color);
+      }
+
+      .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .form-check-input:checked {
+        background-color: var(--dark-color);
+        border-color: var(--dark-color);
+      }
+
+      .register-link {
+        text-align: center;
+        color: var(--secondary-color);
+        margin-top: 2rem;
+      }
+
+      .register-link a {
+        color: var(--dark-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+      }
+
+      .register-link a:hover {
+        color: var(--secondary-color);
+      }
+
+      .alert-custom {
+        border-radius: 0.75rem;
+        border: none;
+        font-weight: 500;
+      }
+
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 2.5rem;
+        }
+
+        .login-card {
+          padding: 2rem;
+        }
+
+        .hero-section {
+          padding: 2rem 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="hero-section d-flex align-items-center py-5">
+      <div class="container">
+        <div class="login-container">
+          <!-- Brand Logo -->
+          <div class="brand-logo">
+            <i class="fas fa-chart-line text-white" style="font-size: 1.5rem;"></i>
+          </div>
+
+          <!-- Hero Content -->
+          <h1 class="hero-title">
+            Chào mừng<br>trở lại
+          </h1>
+          <p class="hero-subtitle">
+            Đăng nhập để tiếp tục theo dõi danh mục đầu tư của bạn
+          </p>
+
+          <!-- Alert Messages -->
+          <div id="alertContainer"></div>
+
+          <!-- Login Card -->
+          <div class="login-card">
+            <!-- Login Form -->
+            <form id="loginForm">
+              <div class="form-floating">
+                <input type="email" class="form-control" id="email" placeholder="your@email.com" required>
+                <label for="email">Địa chỉ email</label>
+              </div>
+
+              <div class="form-floating position-relative">
+                <input type="password" class="form-control" id="password" placeholder="••••••••••" required>
+                <label for="password">Mật khẩu</label>
+                <button type="button" class="password-toggle" id="togglePassword">
+                  <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+              </div>
+
+              <div class="remember-forgot">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="rememberMe">
+                  <label class="form-check-label fw-medium" for="rememberMe">
+                    Ghi nhớ đăng nhập
+                  </label>
+                </div>
+                <a href="#" class="text-decoration-none fw-semibold">Quên mật khẩu?</a>
+              </div>
+
+              <button type="submit" class="btn btn-primary-custom w-100 fw-semibold" id="loginBtn">
+                <span id="loginBtnText">Đăng nhập</span>
+                <span id="loginSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </span>
+              </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="divider">
+              <span>Hoặc tiếp tục với</span>
+            </div>
+
+            <!-- Zalo Login Button -->
+            <button class="btn btn-zalo w-100 fw-semibold d-flex align-items-center justify-content-center" id="zaloLoginBtn">
+              <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M7.5 11.5C7.5 12.3284 8.17157 13 9 13C9.82843 13 10.5 12.3284 10.5 11.5C10.5 10.6716 9.82843 10 9 10C8.17157 10 7.5 10.6716 7.5 11.5Z" />
+                <path
+                  d="M13.5 11.5C13.5 12.3284 14.1716 13 15 13C15.8284 13 16.5 12.3284 16.5 11.5C16.5 10.6716 15.8284 10 15 10C14.1716 10 13.5 10.6716 13.5 11.5Z" />
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M22 12C22 17.5228 17.5228 22 12 22C10.3596 22 8.77516 21.6039 7.35418 20.8583L2.09327 21.9827L3.85418 17.5583C2.70084 15.8088 2 13.7296 2 11.5C2 5.97715 6.47715 1.5 12 1.5S22 5.97715 22 12ZM20 12C20 16.4183 16.4183 20 12 20C10.6564 20 9.38156 19.6781 8.26154 19.1068L6.09327 19.5827L7.26154 17.1068C6.47084 15.8088 6 14.2296 6 12.5C6 8.08172 9.58172 4.5 14 4.5S20 8.08172 20 12Z" />
+              </svg>
+              Đăng nhập với Zalo
+            </button>
+          </div>
+
+          <!-- Register Link -->
+          <div class="register-link">
+            <p class="mb-0">
+              Chưa có tài khoản?
+              <a href="/register" class="ms-1">Tạo tài khoản mới</a>
+            </p>
+          </div>
+
+          <!-- Back to Home -->
+          <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-secondary">
+              <i class="fas fa-arrow-left me-2"></i>Quay về trang chủ
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Show alert function
+      function showAlert(message, type = 'danger') {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertId = 'alert-' + Date.now();
+
+        const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show alert-custom" role="alert" id="${alertId}">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-${type === 'danger' ? 'exclamation-circle' : 'check-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+
+        alertContainer.innerHTML = alertHtml;
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+          const alert = document.getElementById(alertId);
+          if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          }
+        }, 5000);
+      }
+
+      // Show loading with SweetAlert
+      function showLoading(message = 'Đang xử lý...') {
+        Swal.fire({
+          title: message,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          willOpen: () => {
+            Swal.showLoading();
+          }
+        });
+      }
+
+      // Toggle password visibility
+      document.getElementById('togglePassword').addEventListener('click', function () {
+        const password = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (password.type === 'password') {
+          password.type = 'text';
+          eyeIcon.classList.remove('fa-eye');
+          eyeIcon.classList.add('fa-eye-slash');
+        } else {
+          password.type = 'password';
+          eyeIcon.classList.remove('fa-eye-slash');
+          eyeIcon.classList.add('fa-eye');
+        }
+      });
+
+      // Handle login form submission
+      document.getElementById('loginForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('loginBtn');
+        const loginBtnText = document.getElementById('loginBtnText');
+        const loginSpinner = document.getElementById('loginSpinner');
+
+        // Validation
+        if (!email || !password) {
+          showAlert('Vui lòng điền đầy đủ thông tin', 'danger');
+          return;
+        }
+
+        if (password.length < 6) {
+          showAlert('Mật khẩu phải có ít nhất 6 ký tự', 'danger');
+          return;
+        }
+
+        // Show loading state
+        loginBtn.disabled = true;
+        loginBtnText.classList.add('d-none');
+        loginSpinner.classList.remove('d-none');
+
+        // Perform login request
+        fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email.toLowerCase(),
+            password: password
+          })
+        })
+          .then(response => {
+            if (!response.ok) {
+              return response.json().then(err => {
+                throw new Error(err.message || 'Đăng nhập không thành công');
+              });
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.success && data.session_token) {
+              // Store session token
+              document.cookie = `session_token=${data.session_token}; path=/; max-age=86400; SameSite=Lax`;
+
+              // Show success message
+              Swal.fire({
+                title: 'Đăng nhập thành công!',
+                text: 'Đang chuyển hướng...',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              }).then(() => {
+                // window.location.href = '/';
+                window.location.href = '/dashboard'; // Redirect to dashboard instead of '/'
+              });
+            } else {
+              throw new Error(data.message || 'Đăng nhập không thành công');
+            }
+          })
+          .catch(error => {
+            console.error('Login error:', error);
+            showAlert(error.message || 'Đã xảy ra lỗi. Vui lòng thử lại.', 'danger');
+          })
+          .finally(() => {
+            // Reset button state
+            loginBtn.disabled = false;
+            loginBtnText.classList.remove('d-none');
+            loginSpinner.classList.add('d-none');
+          });
+      });
+
+      // Handle Zalo login button click
+      document.getElementById('zaloLoginBtn').addEventListener('click', function () {
+        showLoading('Đang kết nối với Zalo...');
+
+        fetch('/api/auth/zalo/login', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => response.json())
+          .then(data => {
+            Swal.close();
+            if (data.success && data.redirect_url) {
+              window.location.href = data.redirect_url;
+            } else {
+              showAlert(data.message || 'Không thể kết nối với Zalo', 'danger');
+            }
+          })
+          .catch(error => {
+            Swal.close();
+            console.error('Zalo login error:', error);
+            showAlert('Không thể kết nối với Zalo', 'danger');
+          });
+      });
+
+      // Auto-focus email input
+      document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('email').focus();
+      });
+
+      // Handle keyboard shortcuts
+      document.addEventListener('keydown', function (event) {
+        // Submit form on Ctrl+Enter or Cmd+Enter
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+          document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+        }
+      });
+
+      // Handle Enter key on inputs
+      document.getElementById('email').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+          document.getElementById('password').focus();
+        }
+      });
+
+      document.getElementById('password').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+          document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+        }
+      });
+    </script>
+  </body>
+
+</html>

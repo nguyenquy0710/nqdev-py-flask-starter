@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="DC.language" content="scheme=utf-8 content=vi" />
+
+    <title>Stock Tracker</title>
+
+    <link rel="icon" href="https://cdn-s3-001.quyit.id.vn/gitbook/blogs/logo_nqdev_512x512.png" sizes="32x32" />
+    <link rel="icon" href="https://cdn-s3-001.quyit.id.vn/gitbook/blogs/logo_nqdev_512x512.png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="https://cdn-s3-001.quyit.id.vn/gitbook/blogs/logo_nqdev_512x512.png" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- Bootstrap JS (thêm jQuery nếu dùng) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Thêm Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Luxon adapter -->
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.js"></script>
+
+    <!-- Zoom plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.umd.min.js"></script>
+
+    <!-- Datalabels plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
+    <style type="text/css">
+      /* Tùy chỉnh màu nền và viền của tooltip */
+      .tooltip-inner {
+        background-color: #4CAF50;
+        /* Màu nền của tooltip */
+        color: white;
+        /* Màu chữ */
+        font-size: 14px;
+        /* Kích thước chữ */
+        border-radius: 8px;
+        /* Bo tròn viền tooltip */
+        padding: 10px 15px;
+        /* Padding nội dung */
+      }
+
+      /* Tùy chỉnh viền của tooltip */
+      .tooltip-arrow {
+        border-top-color: #4CAF50;
+        /* Màu viền của tooltip */
+      }
+
+      /* Tùy chỉnh khi hover vào tooltip */
+      .tooltip-inner:hover {
+        background-color: #45a049;
+        /* Màu nền khi hover vào tooltip */
+      }
+    </style>
+
+  </head>
+
+  <body class="container py-5">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <h2 class="mb-4">
+      📈 Danh sách theo dõi chứng khoán
+      <br>
+      <small style="font-size: medium;" class="text-muted">Dữ liệu được lấy từ <a href="https://finance.vietstock.vn" target="_blank"
+          class="text-decoration-none">finance.vietstock.vn</a></small>
+    </h2>
+
+    <form class="row row-cols-lg-auto g-2 align-items-center mb-4" method="post" action="/add">
+      <div class="col">
+        <input name="symbol" class="form-control" placeholder="Mã (VD: MBB)" required>
+      </div>
+      <div class="col">
+        <input name="buy_price" type="number" class="form-control" placeholder="Giá mua" step="0.01" required>
+      </div>
+      <div class="col">
+        <input name="sell_price" type="number" class="form-control" placeholder="Giá bán kỳ vọng" step="0.01" required>
+      </div>
+      <div class="col">
+        <input name="profit_loss" type="number" class="form-control" placeholder="% Lãi/Lỗ kỳ vọng" step="0.01" required>
+      </div>
+      <div class="col">
+        <button type="submit" class="btn btn-primary">Thêm mã</button>
+      </div>
+      <div class="col">
+        <button type="button" class="btn btn-secondary" onclick="location.reload()">Reload</button>
+      </div>
+    </form>
+
+    <div class="row row-cols-lg-auto align-items-center g-2 mb-3">
+      <!-- Thêm nút “🔍 Lọc mã đang lãi” -->
+      <div class="col-auto">
+        <button onclick="filterRows(true)" class="btn btn-outline-success btn-sm">🔍 Chỉ hiển thị mã đang lãi</button>
+        <button onclick="filterRows(false)" class="btn btn-outline-secondary btn-sm">Hiển thị tất cả</button>
+      </div>
+
+      <!-- Label -->
+      <div class="col-auto">
+        <label for="reload-interval" class="col-form-label col-form-label-sm">Tải lại mỗi:</label>
+      </div>
+
+      <!-- Dropdown -->
+      <div class="col-auto">
+        <select id="reload-interval" class="form-select form-select-sm w-auto">
+          <option value="30000">30 giây</option>
+          <option value="60000" selected>1 phút</option>
+          <option value="120000">2 phút</option>
+          <option value="300000">5 phút</option>
+        </select>
+      </div>
+
+      <!-- Nút reload -->
+      <div class="col-auto">
+        <button id="manual-reload" class="btn btn-outline-secondary btn-sm" title="Tải lại ngay">
+          &#x21bb; <!-- Unicode cho biểu tượng reload -->
+        </button>
+      </div>
+    </div>
+
+    <table class="table table-bordered table-striped align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Mã</th>
+          <th>Giá gần nhất</th>
+          <th>Giá mua</th>
+          <th>Giá bán kỳ vọng</th>
+          <th>% Lãi/Lỗ kỳ vọng</th>
+          <th>% Lãi/Lỗ thực tế</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for symbol, price in prices.items() %}
+        <tr>
+          <td><a href="/detail/{{ symbol }}">{{ symbol }}</a></td>
+          <td>{{ price }}</td>
+          <td>{{ symbol_info[symbol]['buy_price'] }}</td>
+          <td>{{ symbol_info[symbol]['sell_price'] }}</td>
+          <td>{{ symbol_info[symbol]['profit_loss'] }}%</td>
+          <td class="
+            {% if actual_profit[symbol] != '-' %}
+              {% if actual_profit[symbol] > 0 %}
+                table-success
+              {% elif actual_profit[symbol] < 0 %}
+                table-danger
+              {% endif %}
+            {% endif %}
+          ">
+            {% if actual_profit[symbol] != '-' %}
+            <span class="{% if actual_profit[symbol] > 0 %}text-success{% else %}text-danger{% endif %}">
+              {{ actual_profit[symbol] }}%
+            </span>
+            {% else %}
+            -
+            {% endif %}
+          </td>
+          <td>
+            <!-- Xem biểu đồ -->
+            <button class="btn btn-sm btn-warning btn-sm ms-1 mb-1" onclick="updateChart('{{ symbol }}')" title="Xem biểu đồ">
+              <i class="fas fa-eye"></i> Xem
+            </button>
+            <!-- Làm mới biểu đồ -->
+            <a href="/refresh/{{ symbol }}" class="btn btn-sm btn-info btn-sm ms-1 mb-1" title="Làm mới biểu đồ">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </a>
+            <!-- Xóa với xác nhận -->
+            <button class="btn btn-sm btn-danger btn-sm ms-1 mb-1" onclick="confirmDelete('{{ symbol }}')" title="Xóa biểu đồ">
+              <i class="fas fa-trash-alt"></i> Xoá
+            </button>
+          </td>
+          {% endfor %}
+      </tbody>
+    </table>
+
+    <hr />
+    <div class="mt-4">
+      <h5>📈 Chỉ báo kỹ thuật (Mới nhất)</h5>
+
+      <!-- Grid system của Bootstrap -->
+      <div class="row">
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Đường Trung Bình Hòa Quyết trong 5 giai đoạn. Đây là chỉ báo phản ứng nhanh hơn với các thay đổi về giá trong thị trường.">EMA_5</strong>
+            <span id="indicatorsEMA_5">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Đường Trung Bình Hòa Quyết trong 10 giai đoạn. EMA_10 phản ánh nhanh các thay đổi trong giá và được dùng để phát hiện tín hiệu mua/bán ngắn hạn.">EMA_10</strong>
+            <span id="indicatorsEMA_10">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Đường Trung Bình Đơn Giản trong 20 giai đoạn, được dùng để nhận diện xu hướng giá trung hạn.">MA20</strong>
+            <span id="indicatorsMA20">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Chỉ số sức mạnh tương đối (Relative Strength Index) đo mức độ quá mua/quá bán trong thị trường, với 70 là quá mua và 30 là quá bán.">RSI</strong>
+            <span id="indicatorsRSI">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Đường Trung Bình Đơn Giản trong 5 giai đoạn, giúp theo dõi biến động giá ngắn hạn nhanh chóng.">SMA_5</strong>
+            <span id="indicatorsSMA_5">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Đường Trung Bình Đơn Giản trong 10 giai đoạn. Chỉ báo này giúp nhận diện các xu hướng ngắn hạn của thị trường.">SMA_10</strong>
+            <span id="indicatorsSMA_10">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Dải Bollinger trên, xác định mức kháng cự của giá và có thể cho tín hiệu khi thị trường quá mua (overbought).">Upper
+              Bollinger
+              Band</strong>
+            <span id="indicatorsUpperBB">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Dải Bollinger dưới thể hiện mức hỗ trợ của giá, giúp xác định khi thị trường quá bán (oversold).">Lower Bollinger
+              Band</strong>
+            <span id="indicatorsLowerBB">0</span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="d-flex justify-content-between">
+            <strong data-bs-toggle="tooltip" data-bs-placement="top"
+              title="Giá hiện tại của tài sản, là giá trị giao dịch cuối cùng được thực hiện trên thị trường.">Price</strong>
+            <span id="indicatorsPrice">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <h5 class="mt-5">Biểu đồ giá gần đây - <span id="priceSymbol">{{ first_symbol }}</span></h5>
+      <canvas id="priceChart" height="100"></canvas>
+    </div>
+
+    <script type="text/javascript">
+      // Kích hoạt tooltip cho tất cả các phần tử có data-bs-toggle="tooltip"
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+    </script>
+
+
+    <script type="text/javascript">
+      var chart = undefined;
+
+      function drawChart(timestamps, prices, symbol) {
+        // Tạo mảng [{x, y}] từ timestamp và prices
+        const chartData = timestamps.map((ts, i) => ({
+          x: ts,      // ISO string
+          y: prices[i]
+        }));
+
+        if (symbol) {
+          document.getElementById('priceSymbol').innerHTML = symbol;
+        }
+
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        if (chart) {
+          // Khi cần clear chart (xóa biểu đồ)
+          chart.destroy();
+        }
+
+        // Tính toán giá trị min và max
+        // const minPrice = Math.min(...prices);
+        // const maxPrice = Math.max(...prices);
+        // const yMin = minPrice - 5; // Giới hạn dưới
+        // const yMax = maxPrice + 5; // Giới hạn trên
+
+        const data = {
+          labels: timestamps, //.map(ts => new Date(ts)),  // chuyển ISO → Date object
+          datasets: [{
+            label: 'Giá gần đây',
+            // data: prices,
+            data: chartData,
+            borderColor: 'blue',
+            backgroundColor: "rgba(0, 0, 255, 0.1)",
+            fill: true,
+            tension: 0.1
+          }]
+        };
+
+        const config = {
+          type: 'line',
+          data: data,
+          options: {
+            responsive: true,
+            // parsing: false, // ❌ Bỏ dòng này, vì Chart.js sẽ không tự động hiểu x/y.
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'hour',               // Trục x sẽ chia theo từng phút (có thể là second, minute, hour, day, v.v.)
+                  parser: 'HH:mm:ss d/M/yyyy',  // Cấu hình để hiểu định dạng label của bạn
+                  tooltipFormat: 'dd/MM/yyyy HH:mm:ss',    // Định dạng thời gian khi hover vào điểm dữ liệu (hiện trong tooltip)
+                  displayFormats: {             // Tùy chỉnh hiển thị nhãn trục x với từng unit
+                    minute: 'HH:mm dd/MM',
+                    second: 'HH:mm:ss'
+                  },
+                  zone: 'Asia/Ho_Chi_Minh'      // Yêu cầu hiển thị theo múi giờ Việt Nam (UTC+7) — chỉ hoạt động khi bạn dùng luxon adapter
+                },
+                adapters: {
+                  luxon: {
+                    zone: 'Asia/Ho_Chi_Minh',
+                    locale: 'vi'   // 💡 Quan trọng: sử dụng định dạng tiếng Việt
+                  }
+                },
+                title: {
+                  display: true,
+                  text: 'Thời gian (UTC+7)'
+                }
+              },
+              y: {
+                beginAtZero: false,
+                // min: yMin, // Giới hạn dưới
+                // max: yMax, // Giới hạn trên
+                title: {
+                  display: true,
+                  text: "Giá"
+                }
+              }
+            },
+            plugins: {
+              tooltip: {
+                mode: 'index',
+                intersect: false
+              },
+              zoom: {
+                pan: {
+                  enabled: true,
+                  mode: 'x',
+                  modifierKey: 'ctrl'  // nhấn Ctrl + kéo chuột để pan
+                },
+                zoom: {
+                  wheel: {
+                    enabled: true
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'x'
+                }
+              },
+              datalabels: {
+                align: 'top',
+                anchor: 'end',
+                color: 'black',
+                font: {
+                  size: 10
+                },
+                formatter: function (value) {
+                  const dt = luxon.DateTime.fromISO(value.x, { zone: 'Asia/Ho_Chi_Minh' });
+                  return dt.toFormat("dd/MM/yyyy HH:mm");
+                }
+              },
+            }
+          }
+        };
+
+        // Tạo chart
+        chart = new Chart(ctx, config);
+      }
+
+      // Function định dạng giá trị với 3 chữ số thập phân và xử lý NaN
+      function formatNumber(value) {
+        if (typeof value === 'number' && !isNaN(value)) {
+          return value.toFixed(3);  // Nếu là số hợp lệ, làm tròn tới 3 chữ số
+        } else {
+          return 'N/A';  // Nếu là NaN hoặc không phải là số, trả về 'N/A'
+        }
+      }
+
+      // Hàm cập nhật dữ liệu Indicators
+      function fetchIndicators(symbol) {
+        // Gọi API để lấy dữ liệu chỉ báo kỹ thuật
+        fetch(`/api/chart/indicators/${symbol}`)
+          .then(response => response.json())  // Chuyển phản hồi thành JSON
+          .then(data => {
+            // Kiểm tra nếu API trả về lỗi
+            if (data.error) {
+              console.error("Lỗi: ", data.error);
+              return;
+            }
+
+            // Cập nhật các giá trị vào các phần tử có id tương ứng và định dạng giá trị với 3 chữ số thập phân
+            document.getElementById('indicatorsMA20').innerText = formatNumber(data.MA20);
+            document.getElementById('indicatorsRSI').innerText = formatNumber(data.RSI);
+            document.getElementById('indicatorsUpperBB').innerText = formatNumber(data.UpperBB);
+            document.getElementById('indicatorsLowerBB').innerText = formatNumber(data.LowerBB);
+            document.getElementById('indicatorsEMA_10').innerText = formatNumber(data.EMA_10);
+            document.getElementById('indicatorsEMA_5').innerText = formatNumber(data.EMA_5);
+            document.getElementById('indicatorsSMA_10').innerText = formatNumber(data.SMA_10);
+            document.getElementById('indicatorsSMA_5').innerText = formatNumber(data.SMA_5);
+            document.getElementById('indicatorsPrice').innerText = formatNumber(data.price);
+          })
+          .catch(error => {
+            console.error("Lỗi khi gọi API: ", error);
+          });
+      }
+
+
+      // Hàm cập nhật dữ liệu chart
+      function updateChart(symbol) {
+        console.log("🚀 QuyNH: updateChart -> symbol", symbol)
+        fetch(`/api/chart/${symbol}`)
+          .then(r => r.json())
+          .then(data => {
+            const timestamps = data.timestamps.map(ts => {
+              const date = new Date(ts);
+              return date.toLocaleString();
+            });
+
+            drawChart(timestamps, data.prices, symbol);
+          })
+          .catch(err => {
+            console.warn("⚠ Không lấy được dữ liệu API", err);
+
+            const now = new Date();
+            const timestamps = Array.from({ length: 100 }, (_, i) => {
+              const d = new Date(now.getTime() - (99 - i) * 60000);
+              return d.toLocaleTimeString();
+            });
+            const prices = Array.from({ length: 100 }, () => (20 + Math.random() * 2 - 1).toFixed(2));
+            drawChart(timestamps, prices, symbol);
+          });
+
+        // Lấy dữ liệu từ API
+        fetchIndicators(symbol)
+      }
+
+      // Lấy dữ liệu từ API
+      updateChart(`{{ first_symbol }}`)
+    </script>
+
+    <script type="text/javascript">
+      function confirmDelete(symbol) {
+        Swal.fire({
+          title: `Xác nhận xoá "${symbol}"?`,
+          text: "Thao tác này sẽ xóa toàn bộ dữ liệu!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Xoá',
+          cancelButtonText: 'Huỷ',
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/delete/${symbol}`;
+          }
+        });
+      }
+    </script>
+
+    <script type="text/javascript">
+      function filterRows(onlyProfit) {
+        const rows = document.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+          const profitCell = row.querySelector("td:nth-child(6)");
+          if (!profitCell) return;
+          const text = profitCell.textContent.trim().replace('%', '');
+          const value = parseFloat(text);
+
+          if (onlyProfit) {
+            row.style.display = value > 0 ? "" : "none";
+          } else {
+            row.style.display = "";
+          }
+        });
+      }
+    </script>
+
+    <script type="text/javascript">
+      let intervalId;
+
+      function setReloadInterval(ms) {
+        clearInterval(intervalId); // Xóa interval cũ nếu có
+        intervalId = setInterval(() => {
+          location.reload();
+        }, ms);
+      }
+
+      const dropdown = document.getElementById('reload-interval');
+      const manualReloadBtn = document.getElementById('manual-reload');
+
+      // Đặt mặc định ban đầu là 1 phút
+      setReloadInterval(Number(dropdown.value));
+
+      // Khi người dùng thay đổi thời gian reload
+      dropdown.addEventListener('change', function () {
+        const selectedTime = Number(this.value);
+        setReloadInterval(selectedTime);
+      });
+
+      manualReloadBtn.addEventListener('click', function () {
+        location.reload();
+      });
+    </script>
+
+  </body>
+
+</html>
