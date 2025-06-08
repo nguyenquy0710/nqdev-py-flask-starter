@@ -1,0 +1,21 @@
+import secrets
+import os
+
+# 🔐 Mã bí mật cho session Flask
+SECRET_KEY = secrets.token_hex(16)
+
+# ✅ Sqlite Database Path (nằm trong thư mục ./data)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = os.path.join(BASE_DIR, "data")
+DB_PATH = os.path.join(DB_DIR, "symbols.db")
+
+# 📁 Đảm bảo thư mục tồn tại
+os.makedirs(DB_DIR, exist_ok=True)
+
+# ✅ QuestDB Configuration
+# QUESTDB_INFLUXDB_HOST = "192.168.1.200"  # Default: "localhost"
+QUESTDB_INFLUXDB_HOST = 'questdb-tcp-minipc.quyit.id.vn'
+QUESTDB_TCP_PORT = 20003  # gửi line protocol qua TCP. Default: 9009
+QUESTDB_REST_PORT = 20001  # REST API để query. Default: 9000
+# QUESTDB_REST_URL = f"http://{QUESTDB_INFLUXDB_HOST}:{QUESTDB_REST_PORT}"
+QUESTDB_REST_URL = f"https://questdb-minipc.quyit.id.vn"
