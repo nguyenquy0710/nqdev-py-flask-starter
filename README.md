@@ -19,16 +19,31 @@ A simple and clean **Python Flask project template** with pre-defined structure 
 ## 📂 Project Structure
 
 ```bash
-nqdev-py-flask-starter/
-├── app.py                         # App chính để chạy (tích hợp API & Web UI)
+stock_app/
+├── app/                           # 📦 Thư mục chính chứa mã nguồn
+│   ├── __init__.py                # Biến app thành package Python, chứa create_app()
+│   │
+│   ├── web/                       # ✅ module web_bp
+│   │
+│   ├── api/                       # ✅ module api_bp
+│   │
+│   ├── config/
+│   │   ├── __init__.py
+│   │   ├── config_dev.py          # ✅ Dành cho local development
+│   │   ├── config_prod.py         # ✅ Dành cho production (VD: máy chủ thật)
+│   │   └── config_test.py         # ✅ Dành cho unit test (dùng in-memory DB)
+│
+├── app.py                         # ✅ để chạy local
 ├── config.py                      # Cấu hình (host, port, key...)
 ├── requirements.txt               # Thư viện cần cài
+├── setup.py                       # ⚙️ Cấu hình build (đã chuẩn hoá)
+├── .version.txt                   # 🔖 Ghi từ CI/CD (không cần commit)
+├── VERSION                        # Base version (ví dụ: "1.0")
+├── Dockerfile
+├── README.md
+├── pyproject.toml                 # Tuỳ chọn (nếu dùng setuptools hiện đại)
 │
-├── config/
-│   ├── __init__.py
-│   ├── config_dev.py              # ✅ Dành cho local development
-│   ├── config_prod.py             # ✅ Dành cho production (VD: máy chủ thật)
-│   └── config_test.py             # ✅ Dành cho unit test (dùng in-memory DB)
+
 │
 ├── api/                           # Flask blueprint cho API (JSON)
 │   ├── __init__.py                # Tạo Blueprint api_bp
@@ -61,10 +76,12 @@ nqdev-py-flask-starter/
 │
 ├── static/                        # (tuỳ chọn) CSS/JS tĩnh
 │
-└── tests/
+├── tests/                         # ✅ Unit tests
+│   ├── __init__.py
 │   └── test_questdb_service.py
 │
 │
+
 ```
 
 ---
