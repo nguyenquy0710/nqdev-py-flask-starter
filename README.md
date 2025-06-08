@@ -1,3 +1,6 @@
+[![Python CI/CD with Flask and Docker](https://github.com/nguyenquy0710/nqdev-py-flask-starter/actions/workflows/py-flask-ci-cd.yml/badge.svg)](https://github.com/nguyenquy0710/nqdev-py-flask-starter/actions/workflows/py-flask-ci-cd.yml)
+[![Update Changelog on Release](https://github.com/nguyenquy0710/nqdev-py-flask-starter/actions/workflows/changelog.yml/badge.svg)](https://github.com/nguyenquy0710/nqdev-py-flask-starter/actions/workflows/changelog.yml)
+
 # 🧱 nqdev-py-flask-starter
 
 A simple and clean **Python Flask project template** with pre-defined structure and common modules. Ideal for quickly starting new Flask-based RESTful APIs or small web applications.
