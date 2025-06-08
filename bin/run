@@ -1,0 +1,4 @@
+gunicorn -w 2 -b 0.0.0.0:8000 geoip_proxy:app
+
+:: (Gunicorn sẽ gọi hàm create_app() trong module app)
+gunicorn -w 4 -b 0.0.0.0:8000 app:create_app
