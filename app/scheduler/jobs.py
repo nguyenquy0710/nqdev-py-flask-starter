@@ -3,8 +3,8 @@ from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime
 
 # Import các module để truy vấn dữ liệu và gửi tới QuestDB
-from app.config import logger, Config  # Nhập logger từ config
-from app.db.sqlite_handler import get_all_symbols
+from app.config import Config  # Nhập logger từ config
+from app.helpers.logging_helper import logger
 
 
 def auto_update():

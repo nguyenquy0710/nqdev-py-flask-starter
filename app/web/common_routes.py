@@ -2,9 +2,9 @@ from flask import render_template, request, redirect, flash, url_for
 import pandas as pd
 
 from . import web_bp
-from app.config import log_http_access
 from app.db.auth_handler import validate_session_token
 from app.db.sqlite_handler import get_all_symbols, add_symbol, delete_symbol, get_symbol_info_all
+from app.helpers.logging_helper import LoggingHelper
 
 
 @web_bp.route("/")
@@ -37,5 +37,5 @@ def dashboard():
     actual_profit = {}
     first_symbol = symbols[0] if symbols else None
 
-    log_http_access(request.method, request.path, 200)
+    LoggingHelper.log_http_access(request.method, request.path, 200)
     return render_template("index.html", prices=prices, symbol_info=symbol_info, actual_profit=actual_profit, first_symbol=first_symbol)

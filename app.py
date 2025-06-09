@@ -1,6 +1,14 @@
 from app import create_app
+from app.config import Config, ENV_MODE
+from app.helpers.logging_helper import logger
 
 app = create_app()
+
+# Log thông tin về môi trường hiện tại
+logger.info(f"App dang chay o moi truong: {ENV_MODE}")
+
+# Log thông tin kết nối cơ sở dữ liệu
+logger.info(f"[DB] Using database at: {Config.DB_PATH}")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)

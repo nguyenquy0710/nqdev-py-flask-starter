@@ -8,13 +8,14 @@ import urllib.parse
 from functools import wraps
 
 from . import api_bp, api, api_error_model
-from app.config import Config, logger
+from app.config import Config
 from app.db.auth_handler import (
     create_user, authenticate_user, create_zalo_user,
     create_session_token, validate_session_token, revoke_session_token,
     get_user_by_id
 )
-from app.helpers.common_helper import format_datetime_for_api
+from app.helpers.common_helper import CommonHelper
+from app.helpers.logging_helper import logger
 
 # Zalo OAuth Configuration
 ZALO_APP_ID = Config.ZALO_APP_ID
@@ -120,7 +121,7 @@ class Register(Resource):
                     'email': user['email'],
                     'full_name': user['full_name'],
                     'avatar_url': user['avatar_url'],
-                    'created_at': format_datetime_for_api(user['created_at'])
+                    'created_at': CommonHelper.format_datetime_for_api(user['created_at'])
                 },
                 'session_token': session_token
             }, 201
@@ -165,7 +166,7 @@ class Login(Resource):
                     'full_name': user['full_name'],
                     'avatar_url': user['avatar_url'],
                     # Format datetime
-                    'created_at': format_datetime_for_api(user['created_at'])
+                    'created_at': CommonHelper.format_datetime_for_api(user['created_at'])
                 },
                 'session_token': session_token
             }, 200
@@ -215,8 +216,9 @@ class Profile(Resource):
             'email': user['email'],
             'full_name': user['full_name'],
             'avatar_url': user['avatar_url'],
-            'created_at': format_datetime_for_api(user['created_at'])
+            'created_at': CommonHelper.format_datetime_for_api(user['created_at'])
         }, 200
+
 
 # Zalo OAuth Routes
 
@@ -330,7 +332,7 @@ class ZaloCallback(Resource):
                     'email': user['email'],
                     'full_name': user['full_name'],
                     'avatar_url': user['avatar_url'],
-                    'created_at': format_datetime_for_api(user['created_at'])
+                    'created_at': CommonHelper.format_datetime_for_api(user['created_at'])
                 },
                 'session_token': session_token
             }, 200

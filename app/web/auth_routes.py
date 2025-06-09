@@ -1,8 +1,8 @@
 from flask import render_template, request, redirect, flash, url_for
 
 from . import web_bp
-from app.config import log_http_access
 from app.db.auth_handler import validate_session_token
+from app.helpers.logging_helper import LoggingHelper
 
 
 @web_bp.route("/login")
@@ -15,7 +15,7 @@ def login():
         if user:
             return redirect(url_for('web.index'))
 
-    log_http_access(request.method, request.path, 200)
+    LoggingHelper.log_http_access(request.method, request.path, 200)
     return render_template("login.html")
 
 
@@ -29,7 +29,7 @@ def register():
         if user:
             return redirect(url_for('web.index'))
 
-    log_http_access(request.method, request.path, 200)
+    LoggingHelper.log_http_access(request.method, request.path, 200)
     return render_template("register.html")
 
 
@@ -43,7 +43,7 @@ def logout():
         revoke_session_token(session_token)
 
     flash('Đã đăng xuất thành công', 'success')
-    log_http_access(request.method, request.path, 200)
+    LoggingHelper.log_http_access(request.method, request.path, 200)
 
     # Create response and clear the cookie
     response = redirect(url_for('web.login'))

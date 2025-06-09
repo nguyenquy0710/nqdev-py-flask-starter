@@ -2,10 +2,11 @@ import os
 from flask import Flask
 from flask_cors import CORS
 
-from app.config import Config, logger
+from app.config import Config
 from app.web import web_bp
 from app.api import api_bp
 from app.db import init_app_db
+from app.helpers.logging_helper import logger
 from app.scheduler.jobs import start_scheduler
 
 

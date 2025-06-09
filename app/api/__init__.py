@@ -1,6 +1,8 @@
 from flask import Blueprint
 from flask_restx import Api, Resource, fields
 
+from app.config import ENV_MODE
+
 api_bp = Blueprint("api", __name__)  # , url_prefix="/api")
 
 # Khởi tạo Flask-RESTX API với Swagger
@@ -9,7 +11,8 @@ api = Api(
     version='1.0',
     title='Stock Tracker API',
     description='API để theo dõi và phân tích giá cổ phiếu Việt Nam',
-    doc='/swagger/',  # Swagger UI sẽ có tại /api/swagger/
+    # Swagger UI sẽ có tại /api/swagger/
+    doc=None if ENV_MODE == 'prod' else '/swagger/',
     prefix='/api'
 )
 

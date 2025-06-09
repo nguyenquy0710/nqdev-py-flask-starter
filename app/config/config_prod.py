@@ -38,6 +38,8 @@ class Config:
     QUESTDB_REST_PORT = int(os.getenv("QUESTDB_REST_PORT", "") or "9000")
     QUESTDB_REST_URL = os.getenv(
         "QUESTDB_REST_URL", "") or f"http://{QUESTDB_INFLUXDB_HOST}:{QUESTDB_REST_PORT}"
+    QUESTDB_HTTP_USER = os.getenv("QUESTDB_HTTP_USER", "") or ""
+    QUESTDB_HTTP_PASSWORD = os.getenv("QUESTDB_HTTP_PASSWORD", "") or ""
 
     # Cấu hình schedulers background
     ENABLE_AUTO_UPDATE = os.getenv(

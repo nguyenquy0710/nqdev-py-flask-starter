@@ -1,12 +1,10 @@
 from flask import jsonify, request
 from flask_restx import Api, Resource, fields
 from werkzeug.exceptions import BadRequest, NotFound, InternalServerError
-import pandas as pd
-import requests
 
 from . import api_bp, api, api_error_model
-from app.db.sqlite_handler import get_all_symbols
 from app.config import Config
+from app.db.sqlite_handler import get_all_symbols
 
 # Định nghĩa các model cho Swagger documentation
 common_symbol_model = api.model('Symbol', {
