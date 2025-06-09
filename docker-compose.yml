@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
     # network_mode: host
     ports:
-      - "192.168.1.200:10002:5000"  # Map cổng host:container (đổi nếu app dùng cổng khác)
+      - "5000:5000"  # Map cổng host:container (đổi nếu app dùng cổng khác)
     environment:
       - TZ=Asia/Ho_Chi_Minh
     env_file:
